@@ -11,6 +11,7 @@ import 'package:handy/core/utils/logger.dart';
 import '../../config/constants/storage_constants.dart';
 import '../../data/repositories/auth_repository.dart';
 import '../../data/models/user_model.dart';
+import 'notification_service.dart';
 import 'api_client.dart';
 
 /// ===================== AUTH SERVICE =====================
@@ -84,8 +85,18 @@ class AuthService extends GetxService {
   Future<void> initDevice() async {
     try {
       final deviceId = await getOrCreateDeviceId();
-      String fcmToken =
-          await FirebaseMessaging.instance.getToken() ?? 'unknown';
+      
+      String fcmToken = 'unknown';
+      try {
+        if (Get.isRegistered<NotificationService>()) {
+          fcmToken = await Get.find<NotificationService>().getFcmTokenSafely() ?? 'unknown';
+        } else {
+          fcmToken = await FirebaseMessaging.instance.getToken() ?? 'unknown';
+        }
+      } catch (e) {
+        AppLogger.debug('Failed to fetch FCM Token safely in initDevice: $e');
+      }
+
       final platform = Platform.isAndroid
           ? 'android'
           : (Platform.isIOS ? 'ios' : 'web');
@@ -144,14 +155,23 @@ class AuthService extends GetxService {
     );
   }
 
-  // ──────────────────── LOGIN ────────────────────
-
   Future<Response> login({
     required String email,
     required String password,
   }) async {
     final deviceId = await getOrCreateDeviceId();
-    String fcmToken = await FirebaseMessaging.instance.getToken() ?? 'unknown';
+    
+    String fcmToken = 'unknown';
+    try {
+      if (Get.isRegistered<NotificationService>()) {
+        fcmToken = await Get.find<NotificationService>().getFcmTokenSafely() ?? 'unknown';
+      } else {
+        fcmToken = await FirebaseMessaging.instance.getToken() ?? 'unknown';
+      }
+    } catch (e) {
+      AppLogger.debug('Failed to fetch FCM Token safely in login: $e');
+    }
+
     return await _authRepo.login(
       email: email,
       password: password,

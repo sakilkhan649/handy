@@ -47,6 +47,16 @@ class NotificationService extends GetxService {
     await _requestPermission();
     await _initLocalNotifications();
     await _setupFCMListeners();
+    // Enable native iOS foreground notification banners
+    try {
+      await _fcm.setForegroundNotificationPresentationOptions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+    } catch (e) {
+      AppLogger.debug("Error setting foreground presentation options: $e");
+    }
     _handleFCMToken(); // Run in background so ApiClient can initialize
     return this;
   }
@@ -228,6 +238,8 @@ class NotificationService extends GetxService {
             presentAlert: true,
             presentBadge: true,
             presentSound: true,
+            presentBanner: true,
+            presentList: true,
             // Attach image for iOS if downloaded
             attachments: downloadedPath != null
                 ? [DarwinNotificationAttachment(downloadedPath)]
@@ -266,9 +278,33 @@ class NotificationService extends GetxService {
     }
   }
 
+  Future<String?> getFcmTokenSafely() async {
+    try {
+      if (Platform.isIOS) {
+        String? apnsToken;
+        for (int i = 0; i < 10; i++) {
+          apnsToken = await _fcm.getAPNSToken();
+          if (apnsToken != null) {
+            break;
+          }
+          await Future.delayed(const Duration(milliseconds: 500));
+        }
+
+        if (apnsToken == null) {
+          AppLogger.warning("APNS token is not set. Skipping FCM token retrieval on iOS.");
+          return null;
+        }
+      }
+      return await _fcm.getToken();
+    } catch (e) {
+      AppLogger.warning("Failed to get FCM token safely: $e");
+      return null;
+    }
+  }
+
   Future<void> _handleFCMToken() async {
     try {
-      String? token = await _fcm.getToken();
+      String? token = await getFcmTokenSafely();
       if (token != null) {
         AppLogger.debug("FCM Token: $token");
         await _sendTokenToBackend(token);
@@ -279,7 +315,7 @@ class NotificationService extends GetxService {
         _sendTokenToBackend(newToken);
       });
     } catch (e) {
-      AppLogger.debug("Error fetching FCM token: $e");
+      AppLogger.debug("Error in _handleFCMToken: $e");
     }
   }
 

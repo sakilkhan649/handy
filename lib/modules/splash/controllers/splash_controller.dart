@@ -3,6 +3,7 @@ import '../../../config/routes/app_pages.dart';
 
 import 'package:handy/core/services/notification_service.dart';
 import 'package:handy/core/services/auth_service.dart';
+import 'package:handy/core/controllers/internet_controller.dart';
 
 class SplashController extends GetxController {
   final AuthService _authService = Get.find();
@@ -34,6 +35,14 @@ class SplashController extends GetxController {
 
     _isNavigated = true;
     Get.offAllNamed(AppRoutes.BOTTOM_NAV_BAR);
+
+    // If we started offline, re-push No Internet screen because offAllNamed removed it
+    if (Get.isRegistered<InternetController>()) {
+      final internet = Get.find<InternetController>();
+      if (internet.isShowingNoInternet.value) {
+        Get.toNamed(AppRoutes.NO_INTERNET);
+      }
+    }
 
     // Check if there's an initial push notification payload that needs to route the user
     if (Get.isRegistered<NotificationService>()) {

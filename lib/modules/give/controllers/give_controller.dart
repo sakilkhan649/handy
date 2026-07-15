@@ -46,7 +46,10 @@ class GiveController extends GetxController {
     if (funds.isEmpty) isLoading.value = true;
     try {
       try {
-        final fundsResponse = await apiClient.getData(ApiConstants.givingFunds);
+        final fundsResponse = await apiClient.getData(
+          ApiConstants.givingFunds,
+          query: {'t': DateTime.now().millisecondsSinceEpoch},
+        );
         if (fundsResponse.statusCode == 200 ||
             fundsResponse.statusCode == 201) {
           if (fundsResponse.data['data'] != null &&
@@ -71,6 +74,7 @@ class GiveController extends GetxController {
       try {
         final totalResponse = await apiClient.getData(
           ApiConstants.givingTotalThisYear,
+          query: {'t': DateTime.now().millisecondsSinceEpoch},
         );
         if (totalResponse.statusCode == 200 ||
             totalResponse.statusCode == 201) {
@@ -119,7 +123,10 @@ class GiveController extends GetxController {
   Future<void> fetchHistory() async {
     isHistoryLoading.value = true;
     try {
-      final response = await apiClient.getData(ApiConstants.givingHistory);
+      final response = await apiClient.getData(
+        ApiConstants.givingHistory,
+        query: {'t': DateTime.now().millisecondsSinceEpoch},
+      );
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (response.data['data'] != null &&
             response.data['data']['transactions'] != null) {

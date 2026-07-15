@@ -120,7 +120,6 @@ class ApiClient extends GetxService {
         );
       } else if (!internet.isShowingNoInternet.value) {
         internet.setOffline();
-        Get.toNamed(AppRoutes.NO_INTERNET);
       }
       return handler.next(e);
     }

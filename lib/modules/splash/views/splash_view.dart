@@ -30,6 +30,30 @@ class SplashView extends GetView<SplashController> {
                 ),
               ),
             ),
+            Obx(() {
+              if (controller.isSlowConnection.value) {
+                return Column(
+                  children: [
+                    SizedBox(height: 30.h),
+                    CircularProgressIndicator(
+                      color: AppTheme.primaryColor,
+                    ),
+                    SizedBox(height: 16.h),
+                    Text(
+                      'Internet connection is slow...',
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w500,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppTheme.white.withValues(alpha: 0.7)
+                            : AppTheme.black.withValues(alpha: 0.7),
+                      ),
+                    ),
+                  ],
+                );
+              }
+              return const SizedBox.shrink();
+            }),
           ],
         ),
       ),

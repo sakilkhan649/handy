@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import '../../config/routes/app_pages.dart';
 
 /// ===================== INTERNET CONTROLLER =====================
 /// Reactive controller that tracks internet connectivity state.
@@ -9,12 +10,20 @@ class InternetController extends GetxController {
 
   void setOffline() {
     hasInternet.value = false;
-    isShowingNoInternet.value = true;
+    if (!isShowingNoInternet.value) {
+      isShowingNoInternet.value = true;
+      Get.toNamed(AppRoutes.NO_INTERNET);
+    }
   }
 
   void setOnline() {
     hasInternet.value = true;
-    isShowingNoInternet.value = false;
+    if (isShowingNoInternet.value) {
+      isShowingNoInternet.value = false;
+      if (Get.currentRoute == AppRoutes.NO_INTERNET) {
+        Get.back();
+      }
+    }
   }
 
   /// Toggle connectivity (useful for testing)

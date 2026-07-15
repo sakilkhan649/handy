@@ -7,10 +7,22 @@ import 'package:handy/core/services/auth_service.dart';
 class SplashController extends GetxController {
   final AuthService _authService = Get.find();
 
+  final isSlowConnection = false.obs;
+  bool _isNavigated = false;
+
   @override
   void onInit() {
     super.onInit();
+    _startSlowConnectionTimer();
     navigate();
+  }
+
+  void _startSlowConnectionTimer() {
+    Future.delayed(const Duration(seconds: 30), () {
+      if (!_isNavigated) {
+        isSlowConnection.value = true;
+      }
+    });
   }
 
   Future<void> navigate() async {
@@ -20,6 +32,7 @@ class SplashController extends GetxController {
       await _authService.initDevice();
     }
 
+    _isNavigated = true;
     Get.offAllNamed(AppRoutes.BOTTOM_NAV_BAR);
 
     // Check if there's an initial push notification payload that needs to route the user

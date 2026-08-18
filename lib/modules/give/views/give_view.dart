@@ -325,8 +325,8 @@ class GiveView extends GetView<GiveController> {
               Text(
                 '£',
                 style: TextStyle(
-                  color: AppTheme.primaryColor,
-                  fontSize: 18.sp,
+                  color: AppTheme.brightBlue,
+                  fontSize: 20.sp,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -334,7 +334,8 @@ class GiveView extends GetView<GiveController> {
               Expanded(
                 child: TextField(
                   controller: controller.amountController,
-                  keyboardType: TextInputType.number,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  cursorColor: AppTheme.white,
                   style: TextStyle(
                     color: AppTheme.white,
                     fontSize: 16.sp,
@@ -347,7 +348,14 @@ class GiveView extends GetView<GiveController> {
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
                     ),
+                    filled: false,
+                    fillColor: Colors.transparent,
                     border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    disabledBorder: InputBorder.none,
+                    errorBorder: InputBorder.none,
+                    focusedErrorBorder: InputBorder.none,
                     isDense: true,
                     contentPadding: EdgeInsets.zero,
                   ),

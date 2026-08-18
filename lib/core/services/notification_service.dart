@@ -7,6 +7,7 @@ import 'package:open_file/open_file.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/logger.dart';
 import '../../config/constants/api_constants.dart';
+import '../../config/routes/app_pages.dart';
 import 'api_client.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:dio/dio.dart';
@@ -264,10 +265,10 @@ class NotificationService extends GetxService {
       if (type == 'sermon') {
         final id = data['id'];
         if (id != null) {
-          Get.toNamed('/sermon-details', arguments: {'id': id});
+          Get.toNamed(AppRoutes.SERMON_DETAILS, arguments: {'id': id});
         }
       } else if (type == 'service_reminder' || type == 'custom') {
-        Get.offAllNamed('/bottom-nav-bar');
+        Get.offAllNamed(AppRoutes.BOTTOM_NAV_BAR);
       }
     } else if (data.containsKey('route')) {
       final route = data['route'] as String?;

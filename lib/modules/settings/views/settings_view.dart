@@ -256,31 +256,38 @@ class SettingsView extends GetView<SettingsController> {
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(color: AppTheme.secondaryColor),
       ),
-      child: Column(
-        children: [
-          ListTile(
-            contentPadding: EdgeInsets.symmetric(
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16.r),
+          onTap: () {
+            _showChangePasswordBottomSheet(context);
+          },
+          child: Padding(
+            padding: EdgeInsets.symmetric(
               horizontal: 20.w,
-              vertical: 4.h,
+              vertical: 16.h,
             ),
-            title: Text(
-              'Change Password',
-              style: TextStyle(
-                color: AppTheme.white,
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w600,
-              ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Change Password',
+                  style: TextStyle(
+                    color: AppTheme.white,
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Icon(
+                  Icons.chevron_right,
+                  color: AppTheme.white.withValues(alpha: 0.5),
+                  size: 24.w,
+                ),
+              ],
             ),
-            trailing: Icon(
-              Icons.chevron_right,
-              color: AppTheme.white.withValues(alpha: 0.5),
-              size: 24.w,
-            ),
-            onTap: () {
-              _showChangePasswordBottomSheet(context);
-            },
           ),
-        ],
+        ),
       ),
     );
   }

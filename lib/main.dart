@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:handy/core/services/storage_service.dart';
 import 'package:handy/core/services/notification_service.dart';
+import 'package:handy/core/services/deep_link_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
@@ -108,6 +109,9 @@ void main() async {
   await StorageService.init();
   await Get.putAsync<NotificationService>(
     () async => await NotificationService().init(),
+  );
+  await Get.putAsync<DeepLinkService>(
+    () async => await DeepLinkService().init(),
   );
 
   runApp(const MyApp());

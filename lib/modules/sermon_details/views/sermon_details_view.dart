@@ -10,6 +10,7 @@ import '../../../core/widgets/custom_gradient_appbar.dart';
 import '../../../core/widgets/shimmers/details_shimmer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../config/constants/api_constants.dart';
+import 'package:share_plus/share_plus.dart';
 
 class SermondetailsView extends GetView<SermondetailsController> {
   const SermondetailsView({super.key});
@@ -202,29 +203,57 @@ class SermondetailsView extends GetView<SermondetailsController> {
         ],
         SizedBox(height: 24.h),
         // Share Button
-        Container(
-          width: double.infinity,
-          height: 56.h,
-          decoration: BoxDecoration(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(16.r),
-            border: Border.all(color: AppTheme.primaryLighter, width: 1),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.share, color: AppTheme.brightBlue, size: 20.w),
-              SizedBox(width: 12.w),
-              Text(
-                'Share This Sermon',
-                style: TextStyle(
-                  color: AppTheme.brightBlue,
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w600,
+        Builder(
+          builder: (btnContext) {
+            return Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(16.r),
+                onTap: () {
+                  final sermonTitle = sermon.title ?? 'Inspiring Sermon';
+                  final speaker = sermon.speaker ?? 'PIWC Stoneyburn';
+                  final playStoreLink =
+                      'https://play.google.com/store/apps/details?id=com.piwc.stoneyburn';
+
+                  final box = btnContext.findRenderObject() as RenderBox?;
+
+                  // ignore: deprecated_member_use
+                  Share.share(
+                    '🎧 Listen to "$sermonTitle" by $speaker on the PIWC Stoneyburn app!\n\n'
+                    '📲 Download / Open on Google Play:\n$playStoreLink',
+                    subject: sermonTitle,
+                    sharePositionOrigin: box != null
+                        ? box.localToGlobal(Offset.zero) & box.size
+                        : null,
+                  );
+                },
+                child: Container(
+                  width: double.infinity,
+                  height: 56.h,
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(16.r),
+                    border: Border.all(color: AppTheme.primaryLighter, width: 1),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.share, color: AppTheme.brightBlue, size: 20.w),
+                      SizedBox(width: 12.w),
+                      Text(
+                        'Share This Sermon',
+                        style: TextStyle(
+                          color: AppTheme.brightBlue,
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ],
-          ),
+            );
+          },
         ),
         SizedBox(height: 40.h),
       ],

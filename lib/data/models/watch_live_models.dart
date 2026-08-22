@@ -21,6 +21,7 @@ class YoutubeRecentVideoModel {
   final String? duration;
   final String? publishedAt;
   final String? url;
+  final Map<String, dynamic>? rawJson;
 
   YoutubeRecentVideoModel({
     this.id,
@@ -29,16 +30,18 @@ class YoutubeRecentVideoModel {
     this.duration,
     this.publishedAt,
     this.url,
+    this.rawJson,
   });
 
   factory YoutubeRecentVideoModel.fromJson(Map<String, dynamic> json) {
     return YoutubeRecentVideoModel(
-      id: json['id'],
+      id: json['id'] ?? json['_id'] ?? json['videoId'],
       title: json['title'],
       thumbnailUrl: json['thumbnailUrl'],
       duration: json['duration'],
       publishedAt: json['publishedAt'],
-      url: json['url'],
+      url: json['url'] ?? json['watchUrl'] ?? json['videoUrl'],
+      rawJson: json,
     );
   }
 }

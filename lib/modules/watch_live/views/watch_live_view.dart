@@ -140,6 +140,7 @@ class WatchLiveView extends GetView<WatchLiveController> {
 
           return SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
+            controller: controller.scrollController,
             child: SafeArea(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -545,23 +546,23 @@ class WatchLiveView extends GetView<WatchLiveController> {
 
                         if (controller.recentVideos.isNotEmpty)
                           ...controller.recentVideos.map((video) {
+                            final videoId = video.url != null && video.url!.isNotEmpty
+                                ? controller.extractYoutubeId(video.url!)
+                                : video.id;
                             final isSelected =
-                                video.url != null &&
+                                videoId != null &&
                                 controller.currentVideoId.value != null &&
-                                controller.currentVideoId.value ==
-                                    controller.extractYoutubeId(video.url!);
+                                controller.currentVideoId.value == videoId;
 
-                            return GestureDetector(
-                              onTap: () =>
-                                  controller.handleRecentVideoClick(video),
-                              child: _buildRecentServiceCard(
-                                title: video.title ?? '',
-                                speaker: 'PIWC Stoneyburn',
-                                time:
-                                    '${video.duration} · ${video.publishedAt}',
-                                thumbnailUrl: video.thumbnailUrl,
-                                isSelected: isSelected,
-                              ),
+                            return _buildRecentServiceCard(
+                              title: video.title ?? '',
+                              speaker: 'PIWC Stoneyburn',
+                              time: '${video.duration} · ${video.publishedAt}',
+                              thumbnailUrl: video.thumbnailUrl,
+                              isSelected: isSelected,
+                              onTap: () {
+                                controller.handleRecentVideoClick(video);
+                              },
                             );
                           })
                         else
@@ -717,21 +718,25 @@ class WatchLiveView extends GetView<WatchLiveController> {
     required String time,
     String? thumbnailUrl,
     bool isSelected = false,
+    VoidCallback? onTap,
   }) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 12.h),
-      padding: EdgeInsets.all(12.w),
-      decoration: BoxDecoration(
-        color: AppTheme.cardColor,
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(
-          color: isSelected
-              ? AppTheme.red500
-              : AppTheme.white.withValues(alpha: 0.05),
-          width: isSelected ? 1.5 : 1.0,
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        margin: EdgeInsets.only(bottom: 12.h),
+        padding: EdgeInsets.all(12.w),
+        decoration: BoxDecoration(
+          color: AppTheme.cardColor,
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(
+            color: isSelected
+                ? AppTheme.red500
+                : AppTheme.white.withValues(alpha: 0.05),
+            width: isSelected ? 1.5 : 1.0,
+          ),
         ),
-      ),
-      child: Row(
+        child: Row(
         children: [
           Container(
             width: 70.w,
@@ -820,7 +825,8 @@ class WatchLiveView extends GetView<WatchLiveController> {
               color: AppTheme.mutedTextColor,
               size: 24.w,
             ),
-        ],
+          ],
+        ),
       ),
     );
   }

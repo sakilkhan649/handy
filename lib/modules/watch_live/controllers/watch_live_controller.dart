@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:handy/core/services/api_client.dart';
 import 'package:handy/core/utils/helpers.dart';
@@ -21,6 +22,8 @@ class WatchLiveController extends GetxController {
   YoutubePlayerController? ytController;
   final isPlayingLive = false.obs;
 
+  final scrollController = ScrollController();
+
   @override
   void onInit() {
     super.onInit();
@@ -30,6 +33,7 @@ class WatchLiveController extends GetxController {
   @override
   void onClose() {
     ytController?.close();
+    scrollController.dispose();
     super.onClose();
   }
 
@@ -134,6 +138,11 @@ class WatchLiveController extends GetxController {
 
   String? extractYoutubeId(String url) {
     if (url.isEmpty) return null;
+    
+    if (url.length == 11 && !url.contains('/') && !url.contains('?')) {
+      return url;
+    }
+
     RegExp regExp = RegExp(
         r'^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*',
         caseSensitive: false,
@@ -179,8 +188,27 @@ class WatchLiveController extends GetxController {
   }
 
   void handleRecentVideoClick(YoutubeRecentVideoModel video) {
-    if (video.url != null && video.url!.isNotEmpty) {
-      launchExternalUrl(video.url!);
+    final url = video.url;
+    final id = video.id;
+    
+    if (url != null && url.isNotEmpty) {
+      launchExternalUrl(url);
+    } else if (id != null && id.isNotEmpty) {
+      final watchUrl = 'https://www.youtube.com/watch?v=$id';
+      launchExternalUrl(watchUrl);
+    } else {
+      final keys = video.rawJson?.keys.join(', ') ?? 'None';
+      Helpers.showCustomSnackBar('Failed: Keys available: $keys', title: 'Error', type: SnackBarType.error);
+    }
+  }
+
+  void _scrollToTop() {
+    if (scrollController.hasClients) {
+      scrollController.animateTo(
+        0.0,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
     }
   }
 
@@ -190,9 +218,11 @@ class WatchLiveController extends GetxController {
       final success = await launchUrl(uri, mode: LaunchMode.externalApplication);
       if (!success) {
         Helpers.showDebugLog('Could not launch $url');
+        Helpers.showCustomSnackBar('Could not open link: $url', title: 'Error', type: SnackBarType.error);
       }
     } catch (e) {
       Helpers.showDebugLog('Exception launching $url: $e');
+      Helpers.showCustomSnackBar('Error launching link on this device', title: 'Error', type: SnackBarType.error);
     }
   }
 }

@@ -70,9 +70,7 @@ class CustomTextField extends StatelessWidget {
               style: GoogleFonts.manrope(
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w500,
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? AppTheme.white.withValues(alpha: 0.9)
-                    : AppTheme.black.withValues(alpha: 0.9),
+                color: AppTheme.white.withValues(alpha: 0.9),
               ),
             ),
           ),
